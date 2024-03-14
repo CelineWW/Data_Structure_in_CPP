@@ -10,6 +10,9 @@
 
 #include <iostream>
 #include <iomanip>
+#include <limits>
+#include <algorithm>
+#include <cctype>
 #include "Inventory.h"
 using namespace std;
 
@@ -40,16 +43,19 @@ int main() {
     };
     
     int choice = 0;
+    // Continually display the menu until user choose to quit
     while(choice != 3) {
         displayMenu();
         cout << "Enter menu choice: ";
         cin >> choice;
+        // Continually prompt user input until valid
         if (cin.fail()) {
             cout << "Choose a number from the menu.\n";
             cin.clear();
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
             continue;
         }
+        // Choose from main menu
         switch (choice) {
             case 1:
                 addJob(dirtyDogs, NUM_DOGS);
@@ -90,11 +96,15 @@ void displayMenu() {
 // ********************************************************
 // name:      addJob
 // called by: main
-// passed:    Inventory (&dirtyDogs_p)[], const int NUM_DOGS
+// passed:    Inventory (&dirtyDogs_p)[], const int size
 // returns:   nothing
-// calls:     nothing
+// calls:     Inventory.getDogLicense()
+//            addDogLicense(Inventory &)
+//            addDogName(Inventory &)
+//            addOwnerPhone(Inventory &)
+//            addPriceQuoted(Inventory &)
 // The addJob function taking input to add inventory of   *
-// dirty dog business                                     *
+// dirty dog business, with validation of vacancy         *
 // ********************************************************
 void addJob(Inventory (&dirtyDogs_p)[], int size) {
     for (int i = 0; i < size; i++) {
@@ -119,7 +129,7 @@ void addJob(Inventory (&dirtyDogs_p)[], int size) {
 // called by: addJob
 // passed:    void
 // returns:   nothing
-// calls:     nobody
+// calls:     Inventory.setDogLicense(string)
 // The addDogLicense function validate user's input of    *
 // License Number, then assign to inventory dogLicense    *
 // memeber                                                *
@@ -145,7 +155,7 @@ void addDogLicense(Inventory &dirtyDog) {
 // called by: addJob
 // passed:    void
 // returns:   nothing
-// calls:     nobody
+// calls:     Inventory.setDogName(string)
 // The addDogName function validate user's input of       *
 // Dog Name, then assign to inventory dogName   memeber   *
 // ********************************************************
@@ -169,7 +179,7 @@ void addDogName(Inventory &dirtyDog) {
 // called by: addJob
 // passed:    void
 // returns:   nothing
-// calls:     nobody
+// calls:     Inventory.setOwnerPhone(string)
 // The addOwnerPhone function validate user's input of    *
 // Owner Phone, then assign to inventory object           *
 // ********************************************************
@@ -222,7 +232,7 @@ void addOwnerPhone(Inventory &dirtyDog) {
 // called by: addJob
 // passed:    void
 // returns:   nothing
-// calls:     nobody
+// calls:     Inventory.setPriceQuoted(float)
 // The addPrice function validate user's input of         *
 // Price, then assign to inventory priceQuoted member     *
 // ********************************************************
@@ -309,7 +319,10 @@ void addPriceQuoted(Inventory &dirtyDog) {
 // called by: main
 // passed:    const Inventory (&dirtyDogs_p)[], const int NUM_DOGS
 // returns:   nothing
-// calls:     nobody
+// calls:     Inventory.getDogLicnese()
+//            Inventory.getDogName()
+//            Inventory.getOwnerPhone()
+//            Inventory.getPriceQuoted()
 // The listJobs function display the current jobs of      *
 // dirty dog bathing tasks                                *
 // ********************************************************
