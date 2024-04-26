@@ -39,11 +39,11 @@ public:
     ~DynamicQueue();
     
     // Linked list operations
-    void appendNode(string);
-    void deleteNode();
+    int appendNode(string);
+    string deleteNode();
     int numNodes() const { return countNodes(head); }
     int raffleTicket() const { return pickNode(head); }
-    string getName(int);
+    string getName(int) const;
     void displayList() const { showNode(head); };
     static int getRandomNumber(int, int);
 };

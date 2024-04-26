@@ -50,29 +50,34 @@ DynamicQueue::~DynamicQueue() {
 // The appendNode function append a name to the end of    *
 // the dynamice queue
 // ********************************************************
-void DynamicQueue::appendNode(string newName) {
-    QueueNode* newNode;
-    QueueNode* nodePtr;
-    
-    // Allocate a new node and store customer name
-    newNode = new QueueNode;
-    newNode->name = newName;
-    newNode->number = getRandomNumber(1, 500);
-    newNode->next = nullptr;
-    
-    // If there are no nodes in the list, make a new one
-    if (!head) {
-        head = newNode;
+int DynamicQueue::appendNode(string newName) {
+    if (newName.size() >= 20) {
+        cout << "Low: Name is too long." << endl;
+        return -1;
     }
-    else {     // Otherwise insert newNode at the end
-        nodePtr = head;
-        // If pointer in next Node is not a nullptr, keep moving forward
-        while(nodePtr->next) {
-            nodePtr = nodePtr->next;
+    else {
+        int numberAssigned;
+        QueueNode* newNode;
+        QueueNode* nodePtr;
+        
+        // Allocate a new node and store customer name
+        newNode = new QueueNode;
+        newNode->name = newName;
+        newNode->number = getRandomNumber(1, 500);
+        newNode->next = nullptr;
+        
+        // If there are no nodes in the list, make a new one
+        if (!head) {
+            head = newNode;
         }
-        nodePtr->next = newNode;
+        else {     // Otherwise insert newNode in front of head
+            nodePtr = head;
+            newNode->next = nodePtr;
+            head = newNode;
+        }
+        numberAssigned = newNode->number;
+        return numberAssigned;
     }
-    cout << "Low: added new node:" << newName << " with number " << newNode->number << endl;
 }
 
 
@@ -86,18 +91,35 @@ void DynamicQueue::appendNode(string newName) {
 // The deleteNode function delete a node from the head of *
 // the dynamic queue
 // ********************************************************
-void DynamicQueue::deleteNode() {
+string DynamicQueue::deleteNode() {
+    string customer;
     // If there are no nodes in the list, display message
     if (!head) {
         cout << "Low: No person in line." << endl;
     }
-    // Otherwise,delete first node from the list
-    // Make the second node to be the head
+    // Otherwise,delete last node from the list
+    // Make the second last node to be the end
     else {
-        QueueNode* temp = head;
-        head = head->next;
-        delete temp;
+        QueueNode* nodePtr = head;
+        QueueNode* previousPtr = nullptr;
+        
+        // Traverse the list to reach the last node
+        while (nodePtr->next) {
+            previousPtr = nodePtr;
+            nodePtr = nodePtr->next;
+            customer = nodePtr->name;
+        }
+        
+        // nodePtr is the last node, previousPtr is the second last node
+        if (previousPtr) {          // Multiple node in the list
+            previousPtr->next = nullptr;
+        }
+        else {                      // Only one node in the list
+            head = nullptr;
+        }
+        delete nodePtr;
     }
+    return customer;
 }
 
 // Accessor function definition
@@ -141,14 +163,12 @@ int DynamicQueue::pickNode(QueueNode* nodePtr) const {
     // Otherwise get a random index from assigned tickets
     else {
         int randomIndex = getRandomNumber(1, nodeCount);
-        cout << "Random Index:" << randomIndex << endl;
-        // Traverse the linked list to find the node correspoding to the random index
-        QueueNode* nodePtr = head;
         // Use randomIndex to control steps
         for (int i = 0; i < randomIndex; i++) {
             nodePtr = nodePtr->next;
         }
     }
+    // return raffle ticket number
     return nodePtr->number;
 }
 
@@ -162,7 +182,7 @@ int DynamicQueue::pickNode(QueueNode* nodePtr) const {
 // The countNodes function cumulate the number of nodes   *
 // by recursive counting the nodes
 // ********************************************************
-string DynamicQueue::getName(int raffleNumber) {
+string DynamicQueue::getName(int raffleNumber) const{
     int nodeCount = numNodes();
     string raffleName;
     
@@ -196,7 +216,7 @@ void DynamicQueue::showNode(QueueNode* nodePtr) const {
     //
     if (nodePtr) {
         showNode(nodePtr->next);
-        cout << "(" << countNodes(nodePtr) - 1 << ")";
+        cout << "(" << countNodes(nodePtr) - 1 << ") ";
         cout << nodePtr->name << " " << nodePtr->number << endl;
     }
 }
@@ -211,8 +231,7 @@ void DynamicQueue::showNode(QueueNode* nodePtr) const {
 // The getRandomNumber function generate a random number  *
 // between min and max value
 // ********************************************************
-
-static int getRandomNumber(int min, int max) {
+int DynamicQueue::getRandomNumber(int min, int max) {
     // Get system time
     unsigned seed = static_cast<unsigned int>(time(0));
     
@@ -222,3 +241,4 @@ static int getRandomNumber(int min, int max) {
     // Return random nubmer between min and max value
     return (rand() % (max - min + 1) + min);
 }
+
