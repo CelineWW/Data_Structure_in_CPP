@@ -15,21 +15,22 @@
 #include "DynamicQueue.h"
 using namespace std;
 
-// Function declarations
+// Main menu function declarations
 void displayMenu();
-void exitProgram();
-void chooseReward(string);
-void countNames(const DynamicQueue&);
-void makeOrder(DynamicQueue&);
-void displayLine(const DynamicQueue&);
 void addName(DynamicQueue&);
+void makeOrder(DynamicQueue&);
+void countNames(const DynamicQueue&);
 void raffleCustomer(const DynamicQueue&);
+void displayLine(const DynamicQueue&);
+void exitProgram();
+
+// Helper function declarations
 void chooseReward(string);
 
 int main() {
     displayMenu();
     
-    // Create a WordStack object.
+    // Create a DynamicQueue object.
     DynamicQueue waitingList;
     
     int choice = 0;
@@ -57,7 +58,6 @@ int main() {
                 countNames(waitingList);
                 break;
             case 4:
-//                cout << waitingList.raffleTicket();
                 raffleCustomer(waitingList);
                 break;
             case 5:
@@ -93,70 +93,14 @@ void displayMenu() {
 }
 
 // ********************************************************
-// name:      exitProgram()
+// name:      addName
 // called by: main
-// passed:    nothing
+// passed:    DynamicQueue&
 // returns:   nothing
-// calls:     nobody
-// The exitProgram function terminate the program         *
-// ********************************************************
-void exitProgram() {
-    cout << "Thank you for visiting Point Loma Seafoods!\n";
-    cout << "-----------------------------------------------------\n";
-}
-
-
-
-
-
-// ********************************************************
-// name:      countNames()
-// called by: main
-// passed:    nothing
-// returns:   nothing
-// calls:     int DynamicQueue::numNodes
-// The countNames print the number of people in line      *
-// ********************************************************
-void countNames(const DynamicQueue& line) {
-    cout << "Number of people in the line: " << line.numNodes() << endl << endl;
-}
-
-
-// ********************************************************
-// name:      countNames()
-// called by: main
-// passed:    nothing
-// returns:   nothing
-// calls:     int DynamicQueue::numNodes
-// The countNames print the number of people in line      *
-// ********************************************************
-void makeOrder(DynamicQueue& line) {
-    cout << line.deleteNode() << ", you can order now!" << endl << endl;
-}
-
-
-// ********************************************************
-// name:      countNames()
-// called by: main
-// passed:    nothing
-// returns:   nothing
-// calls:     int DynamicQueue::numNodes
-// The countNames print the number of people in line      *
-// ********************************************************
-void displayLine(const DynamicQueue& line) {
-    cout << endl;
-    line.displayList();
-    cout << endl;
-}
-
-
-// ********************************************************
-// name:      countNames()
-// called by: main
-// passed:    nothing
-// returns:   nothing
-// calls:     int DynamicQueue::numNodes
-// The countNames print the number of people in line      *
+// calls:     int DynamicQueue::appendNode(string)
+// The addName function take user input of customer name  *
+// with validation, then call append to create a new node *
+// to the waiting list                                    *
 // ********************************************************
 void addName(DynamicQueue& line) {
     // take user input for customer name
@@ -181,28 +125,104 @@ void addName(DynamicQueue& line) {
     cout << "Your raffle number is " << line.appendNode(newCustomer) << endl << endl;
 }
 
-
 // ********************************************************
-// name:      countNames()
+// name:      makeOrder()
 // called by: main
-// passed:    nothing
+// passed:    DynamicQueue&
 // returns:   nothing
-// calls:     int DynamicQueue::numNodes
-// The countNames print the number of people in line      *
+// calls:     int DynamicQueue::deleteNode()
+// The makeOrder function delete a node from the front  *
+// of the queue if there is any
 // ********************************************************
-void raffleCustomer(const DynamicQueue& line) {
-    int raffled = line.raffleTicket();
-    cout << "The winning raffle number is :" << raffled << endl << endl;
-    chooseReward(line.getName(raffled));
+void makeOrder(DynamicQueue& line) {
+    if (line.numNodes() == 0) {
+        cout << "No pending order now.\n" << endl;
+        return;
+    }
+    else {
+        cout << line.deleteNode() << ", you can order now!" << endl << endl;
+        return;
+    }
 }
 
 // ********************************************************
-// name:      countNames()
+// name:      countNames
+// called by: main
+// passed:    const DynamicQueue&
+// returns:   nothing
+// calls:     int DynamicQueue::numNodes()
+// The countNames print the number of people in line      *
+// ********************************************************
+void countNames(const DynamicQueue& line) {
+    cout << "Number of people in the line: " << line.numNodes() << endl << endl;
+}
+
+// ********************************************************
+// name:      raffleCustomer
+// called by: main
+// passed:    const DynamicQueue&
+// returns:   nothing
+// calls:     int DynamicQueue::raffleTicket() const
+//            string DynamicQueue::getName(int) const
+//            void chooseReward(string)
+// The raffleCustomer randomly pick a customer in line,   *
+// display the winner's name and prompt the winner to     *
+// pick a reward                                          *
+// ********************************************************
+void raffleCustomer(const DynamicQueue& line) {
+    int raffled = line.raffleTicket();
+    if (raffled == -1) {
+        cout << "No customer in line or picked customer is no longer in line.\n";
+        cout << "Raffle ticket is invalid.\n" << endl;
+    }
+    else {
+        cout << "The winning raffle number is :" << raffled << endl << endl;
+        chooseReward(line.getName(raffled));
+    }
+}
+
+// ********************************************************
+// name:      displayLine
 // called by: main
 // passed:    nothing
 // returns:   nothing
+// calls:     int DynamicQueue::displayList()
+//
+// The displayLine print the name and ticket number of    *
+// of each customer in line                               *
+// ********************************************************
+void displayLine(const DynamicQueue& line) {
+    if (line.numNodes() == 0) {
+        cout << "There is nobody in line.\n" << endl;
+        return;
+    }
+    else {
+        cout << endl;
+        line.displayList();
+        cout << endl;
+    }
+}
+
+// ********************************************************
+// name:      exitProgram()
+// called by: main
+// passed:    nothing
+// returns:   nothing
+// calls:     nobody
+// The exitProgram function terminate the program         *
+// ********************************************************
+void exitProgram() {
+    cout << "Thank you for visiting Point Loma Seafoods!\n";
+    cout << "-----------------------------------------------------\n";
+}
+
+// ********************************************************
+// name:      chooseReward
+// called by: void raffleCustomer(const DynamicQueue&)
+// passed:    string
+// returns:   nothing
 // calls:     int DynamicQueue::numNodes
-// The countNames print the number of people in line      *
+// The chooseReward prompt the winner to pick a reward    *
 // ********************************************************
 void chooseReward(string winner) {
     // Display reward menu
@@ -232,3 +252,5 @@ void chooseReward(string winner) {
         }
     }
 }
+
+

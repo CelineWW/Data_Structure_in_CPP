@@ -29,8 +29,8 @@ DynamicQueue::~DynamicQueue() {
     QueueNode* nodePtr = nullptr;
     QueueNode* nextNode = nullptr;
     
-    // Position nodePtr at the head of the list
-    nodePtr = head;
+    // Position nodePtr at the front of the list
+    nodePtr = front;
     
     // Traverse the list deleting each node
     while (nodePtr) {          // If nodePtr is not nullptr
@@ -43,12 +43,13 @@ DynamicQueue::~DynamicQueue() {
 // Mutator function definitions
 // ********************************************************
 // name:      appendNode
-// called by: main
-// passed:    string name
-// returns:   nothing
-// calls:     countBeads
-// The appendNode function append a name to the end of    *
-// the dynamice queue
+// called by: void addName(DynamicQueue&)
+// passed:    string
+// returns:   int
+// calls:     static int getRandomNumber(int, int)
+// The appendNode function append a node( to the rear of  *
+// the dynamice queue, return a random number that
+// assigned to this new node
 // ********************************************************
 int DynamicQueue::appendNode(string newName) {
     if (newName.size() >= 20) {
@@ -61,19 +62,20 @@ int DynamicQueue::appendNode(string newName) {
         QueueNode* nodePtr;
         
         // Allocate a new node and store customer name
+        // Assign this new customer a random ticket number between 1 to 500
         newNode = new QueueNode;
         newNode->name = newName;
         newNode->number = getRandomNumber(1, 500);
         newNode->next = nullptr;
         
         // If there are no nodes in the list, make a new one
-        if (!head) {
-            head = newNode;
+        if (!front) {
+            front = newNode;
         }
-        else {     // Otherwise insert newNode in front of head
-            nodePtr = head;
+        else {     // Otherwise insert newNode in the front
+            nodePtr = front;
             newNode->next = nodePtr;
-            head = newNode;
+            front = newNode;
         }
         numberAssigned = newNode->number;
         return numberAssigned;
@@ -84,23 +86,23 @@ int DynamicQueue::appendNode(string newName) {
 // Mutator function definitions
 // ********************************************************
 // name:      deleteNode
-// called by: main
-// passed:    int position
-// returns:   nothing
-// calls:     countBeads
-// The deleteNode function delete a node from the head of *
+// called by: void makeOrder(DynamicQueue&);
+// passed:    nothing
+// returns:   string
+// calls:     nothing
+// The deleteNode function delete a node from the front of *
 // the dynamic queue
 // ********************************************************
 string DynamicQueue::deleteNode() {
     string customer;
     // If there are no nodes in the list, display message
-    if (!head) {
-        cout << "Low: No person in line." << endl;
+    if (!front) {
+        cout << "No person in line." << endl;
     }
     // Otherwise,delete last node from the list
     // Make the second last node to be the end
     else {
-        QueueNode* nodePtr = head;
+        QueueNode* nodePtr = front;
         QueueNode* previousPtr = nullptr;
         
         // Traverse the list to reach the last node
@@ -115,7 +117,7 @@ string DynamicQueue::deleteNode() {
             previousPtr->next = nullptr;
         }
         else {                      // Only one node in the list
-            head = nullptr;
+            front = nullptr;
         }
         delete nodePtr;
     }
@@ -126,11 +128,11 @@ string DynamicQueue::deleteNode() {
 // ********************************************************
 // name:      countNodes
 // called by: int DynamicQueue::numNodes() const
-// passed:    nothing
-// returns:   nothing
-// calls:     nobody
-// The countNodes function cumulate the number of nodes   *
-// by recursive counting the nodes
+// passed:    QueueNode*
+// returns:   int
+// calls:     countNodes(QueueNode* nodePtr) - recursive
+// The countNodes function cummulate the number of nodes  *
+// by recursively counting the nodes                      *
 // ********************************************************
 int DynamicQueue::countNodes(QueueNode* nodePtr) const {
     // While has a value, add 1 to the count
@@ -145,16 +147,16 @@ int DynamicQueue::countNodes(QueueNode* nodePtr) const {
 // Accessor function definition
 // ********************************************************
 // name:      pickNode
-// called by: int DynamicQueue::ra() const
-// passed:    nothing
-// returns:   nothing
-// calls:     nobody
-// The countNodes function cumulate the number of nodes   *
-// by recursive counting the nodes
+// called by: int DynamicQueue::raffleTicket() const
+// passed:    QueueNode*
+// returns:   int
+// calls:     static int getRandomNumber(int, int)
+// The pickNode function randomly pick a node from the    *
+// current queue
 // ********************************************************
 int DynamicQueue::pickNode(QueueNode* nodePtr) const {
     // Count the number of nodes
-    int nodeCount = countNodes(head);
+    int nodeCount = countNodes(front);
     
     // If no nodes exits, return -1
     if (nodeCount == 0) {
@@ -172,48 +174,19 @@ int DynamicQueue::pickNode(QueueNode* nodePtr) const {
     return nodePtr->number;
 }
 
-// Accessor function definition
-// ********************************************************
-// name:      getName
-// called by: int DynamicQueue::ra() const
-// passed:    nothing
-// returns:   nothing
-// calls:     nobody
-// The countNodes function cumulate the number of nodes   *
-// by recursive counting the nodes
-// ********************************************************
-string DynamicQueue::getName(int raffleNumber) const{
-    int nodeCount = numNodes();
-    string raffleName;
-    
-    // Traverse the queue to find the name corresponding to the raffle number
-    QueueNode* nodePtr = head;
-    for (int i = 0; i < nodeCount; i++) {
-        if (nodePtr->number == raffleNumber) {
-            raffleName = nodePtr->name;
-            break;
-        }
-        else {
-            nodePtr = nodePtr->next;
-        }
-    }
-    return raffleName;
-}
-
-
 
 // Accessor function definition
 // ********************************************************
 // name:      showNode
-// called by: int DynamicQueue::ra() const
-// passed:    nothing
+// called by: void displayList() const
+// passed:    QueueNode*
 // returns:   nothing
-// calls:     nobody
-// The countNodes function cumulate the number of nodes   *
-// by recursive counting the nodes
+// calls:     void showNode(QueueNode*) const
+//            int countNodes(QueueNode*) const
+// The showNode function traverse the list to show each   *
+// name and ticket number stored in nodes
 // ********************************************************
 void DynamicQueue::showNode(QueueNode* nodePtr) const {
-    //
     if (nodePtr) {
         showNode(nodePtr->next);
         cout << "(" << countNodes(nodePtr) - 1 << ") ";
@@ -225,8 +198,9 @@ void DynamicQueue::showNode(QueueNode* nodePtr) const {
 // ********************************************************
 // name:      getRandomNumber
 // called by: int DynamicQueue::appendNode() const
+//            int pickNode(QueueNode*) const
 // passed:    nothing
-// returns:   rand(min, max)
+// returns:   int
 // calls:     nobody
 // The getRandomNumber function generate a random number  *
 // between min and max value
@@ -242,3 +216,30 @@ int DynamicQueue::getRandomNumber(int min, int max) {
     return (rand() % (max - min + 1) + min);
 }
 
+// Helper function definition
+// ********************************************************
+// name:      getName
+// called by: int DynamicQueue::ra() const
+// passed:    nothing
+// returns:   string
+// calls:     int numNodes() const
+// The getName function search node from current queue to *
+// get name of customer based on the ticket number
+// ********************************************************
+string DynamicQueue::getName(int raffleNumber) const{
+    int nodeCount = numNodes();
+    string raffleName;
+    
+    // Traverse the queue to find the name corresponding to the raffle number
+    QueueNode* nodePtr = front;
+    for (int i = 0; i < nodeCount; i++) {
+        if (nodePtr->number == raffleNumber) {
+            raffleName = nodePtr->name;
+            break;
+        }
+        else {
+            nodePtr = nodePtr->next;
+        }
+    }
+    return raffleName;
+}
