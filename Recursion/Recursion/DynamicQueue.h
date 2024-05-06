@@ -22,9 +22,8 @@ private:
         struct QueueNode* next;
     };
 
-    // Linked list front and real pointer
-    QueueNode* front;
-    QueueNode* real;
+    // Linked list head pointer
+    QueueNode* head;
     
     // Private member function
     int countNodes(QueueNode*) const;
@@ -34,7 +33,7 @@ private:
     
 public:
     // Constructor
-    DynamicQueue() { front = nullptr; real = nullptr; }
+    DynamicQueue() { head = nullptr; }
     
     // Destructor
     ~DynamicQueue();
@@ -42,9 +41,9 @@ public:
     // Linked list operations
     int appendNode(string);         // Mutator
     string deleteNode();            // Mutator
-    int numNodes() const { return countNodes(front); }         // Accessor
-    int raffleTicket() const { return pickNode(front); }       // Accessor
-    void displayList() const { showNode(front); };             // Accessor
+    int numNodes() const { return countNodes(head); }         // Accessor
+    int raffleTicket() const { return pickNode(head); }       // Accessor
+    void displayList() const { showNode(head); };             // Accessor
     
     // Helper functions
     static int getRandomNumber(int, int);

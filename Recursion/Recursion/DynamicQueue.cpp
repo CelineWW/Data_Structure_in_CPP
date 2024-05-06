@@ -10,6 +10,8 @@
  */
 #include <string>
 #include <iostream>
+#include <fstream>
+#include <iomanip>
 #include <cstdlib>
 #include <ctime>
 #include "DynamicQueue.h"
@@ -29,8 +31,8 @@ DynamicQueue::~DynamicQueue() {
     QueueNode* nodePtr = nullptr;
     QueueNode* nextNode = nullptr;
     
-    // Position nodePtr at the front of the list
-    nodePtr = front;
+    // Position nodePtr at the head of the list
+    nodePtr = head;
     
     // Traverse the list deleting each node
     while (nodePtr) {          // If nodePtr is not nullptr
@@ -47,7 +49,7 @@ DynamicQueue::~DynamicQueue() {
 // passed:    string
 // returns:   int
 // calls:     static int getRandomNumber(int, int)
-// The appendNode function append a node( to the rear of  *
+// The appendNode function append a node(to the rear of   *
 // the dynamice queue, return a random number that
 // assigned to this new node
 // ********************************************************
@@ -69,13 +71,13 @@ int DynamicQueue::appendNode(string newName) {
         newNode->next = nullptr;
         
         // If there are no nodes in the list, make a new one
-        if (!front) {
-            front = newNode;
+        if (!head) {
+            head = newNode;
         }
-        else {     // Otherwise insert newNode in the front
-            nodePtr = front;
+        else {     // Otherwise insert newNode in the end
+            nodePtr = head;
             newNode->next = nodePtr;
-            front = newNode;
+            head = newNode;
         }
         numberAssigned = newNode->number;
         return numberAssigned;
@@ -90,19 +92,19 @@ int DynamicQueue::appendNode(string newName) {
 // passed:    nothing
 // returns:   string
 // calls:     nothing
-// The deleteNode function delete a node from the front of *
+// The deleteNode function delete a node from the head of *
 // the dynamic queue
 // ********************************************************
 string DynamicQueue::deleteNode() {
     string customer;
     // If there are no nodes in the list, display message
-    if (!front) {
+    if (!head) {
         cout << "No person in line." << endl;
     }
     // Otherwise,delete last node from the list
     // Make the second last node to be the end
     else {
-        QueueNode* nodePtr = front;
+        QueueNode* nodePtr = head;
         QueueNode* previousPtr = nullptr;
         
         // Traverse the list to reach the last node
@@ -117,7 +119,7 @@ string DynamicQueue::deleteNode() {
             previousPtr->next = nullptr;
         }
         else {                      // Only one node in the list
-            front = nullptr;
+            head = nullptr;
         }
         delete nodePtr;
     }
@@ -156,7 +158,7 @@ int DynamicQueue::countNodes(QueueNode* nodePtr) const {
 // ********************************************************
 int DynamicQueue::pickNode(QueueNode* nodePtr) const {
     // Count the number of nodes
-    int nodeCount = countNodes(front);
+    int nodeCount = countNodes(head);
     
     // If no nodes exits, return -1
     if (nodeCount == 0) {
@@ -190,7 +192,7 @@ void DynamicQueue::showNode(QueueNode* nodePtr) const {
     if (nodePtr) {
         showNode(nodePtr->next);
         cout << "(" << countNodes(nodePtr) - 1 << ") ";
-        cout << nodePtr->name << " " << nodePtr->number << endl;
+        cout << fixed << setw(20) << left << nodePtr->name << " " << nodePtr->number << endl;
     }
 }
 
@@ -231,7 +233,7 @@ string DynamicQueue::getName(int raffleNumber) const{
     string raffleName;
     
     // Traverse the queue to find the name corresponding to the raffle number
-    QueueNode* nodePtr = front;
+    QueueNode* nodePtr = head;
     for (int i = 0; i < nodeCount; i++) {
         if (nodePtr->number == raffleNumber) {
             raffleName = nodePtr->name;
